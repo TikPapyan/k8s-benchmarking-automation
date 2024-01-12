@@ -21,7 +21,7 @@ DURATION = int(os.getenv('DURATION', 60))
 REMOTE_USER = os.getenv('REMOTE_USER', "scylla")
 REMOTE_IP = os.getenv('REMOTE_IP', "192.168.11.203")
 SSH_PASSWORD = os.getenv('SSH_PASSWORD', "$cy11a")
-
+INFINITE_TIMEOUT = os.getenv('INFINITE_TIMEOUT', 'false').lower() == 'true'
 
 def main():
     try:
@@ -47,8 +47,10 @@ def main():
         logger.debug("Processing pod metrics.")
         process_and_write_results(LOG_DIR, DEPLOYMENTS, SINGLE_RESULT_FILE_PATH, COMBO_RESULT_FILE_PATH)
 
-        while True:
-            time.sleep(10)
+        if INFINITE_TIMEOUT:
+            logger.info("Running with infinite timeout. Script will not terminate.")
+            while True:
+                time.sleep(10)
 
     finally:
         logger.info("Cleaning up.")

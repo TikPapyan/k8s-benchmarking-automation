@@ -78,6 +78,8 @@ spec:
               value: 'scylla'
             - name: LOG_LEVEL
               value: "INFO"
+            - name: INFINITE_TIMEOUT
+              value: 'true'
             volumeMounts:
             - name: bench-volume
               mountPath: "/var/log/scylla/bench/"
