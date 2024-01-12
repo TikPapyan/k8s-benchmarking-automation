@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+  namespace: benchmarking
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: benchmarking-default-role
+  namespace: benchmarking
+rules:
+  - apiGroups: [ "apps", "v1", "*" ]
+    resources:
+      - "*"
+    verbs:
+      - get
+      - watch
+      - list
+      - create
+      - update
+      - patch
+      - delete
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: benchmarking-default-role-binding
+  namespace: benchmarking
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: benchmarking
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: benchmarking-default-role
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: default
+  namespace: benchmarking
+  annotations:
+    kubernetes.io/service-account.name: default
+    kubernetes.io/service-account.namespace: benchmarking
+type: kubernetes.io/service-account-token
+
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: benchmarking
+  namespace: benchmarking
+spec:
+  schedule: "0 0 1 1 *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: default
+          containers:
+          - name: bench-script-container
+            image: tikpapyan/benchmarking:v1.0-203
+            env:
+            - name: DURATION
+              value: '20'
+            - name: SSH_PASSWORD
+              value: '$cy11a'
+            - name: REMOTE_IP
+              value: '192.168.11.203'
+            - name: REMOTE_USER
+              value: 'scylla'
+            - name: LOG_LEVEL
+              value: "INFO"
+            volumeMounts:
+            - name: bench-volume
+              mountPath: "/var/log/scylla/bench/"
+          restartPolicy: OnFailure
+          volumes:
+          - name: bench-volume
+            hostPath:
+              path: /var/log/scylla/bench/
+              type: DirectoryOrCreate
