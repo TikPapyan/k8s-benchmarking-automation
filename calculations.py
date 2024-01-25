@@ -167,6 +167,7 @@ def extract_camera_number(logs, deployment_type):
     elif deployment_type == 'tfa':
         match = re.search(r'Batch size: (\d+)', logs)
         if match:
-            camera_number = match.group(1) * 2
+            camera_number = match.group(1)
+            camera_number = camera_number * 2
 
     return camera_number

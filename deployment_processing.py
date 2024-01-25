@@ -123,6 +123,7 @@ def process_combo_deployments(csvwriter, log_dir, deployments, hardware_metrics,
 
             metrics = calculate_and_log_metrics(deployment_name, log_file_path, log_dir)
             camera_number = extract_camera_number(logs, deployment_name)
+            logger.info(f"{deployment_name} camera number: {camera_number}")
             metrics["Camera Number"] = camera_number
 
             column_mapping = family_column_indices.get(deployment_name, {})
