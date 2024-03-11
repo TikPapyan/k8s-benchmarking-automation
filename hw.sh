@@ -21,20 +21,25 @@ do
     local_vram=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{sum += $1; local_count++} END {if (local_count > 0) print sum/local_count; else print 0}')
     local_ram=$(free -m | awk '/^Mem/ {print $3 / 1024}')
 
-    total_cpu=$(awk "BEGIN {print $total_cpu + $local_cpu}")
-    total_gpu=$(awk "BEGIN {print $total_gpu + $local_gpu}")
-    total_vram=$(awk "BEGIN {print $total_vram + $local_vram}")
-    total_ram=$(awk "BEGIN {print $total_ram + $local_ram}")
+    echo "Debug: CPU $local_cpu, GPU $local_gpu, VRAM $local_vram, RAM $local_ram" >> gpu.log
+
+    if [[ ! $local_cpu =~ ^[0-9]+([.][0-9]+)?$ ]]; then local_cpu=0; fi
+    if [[ ! $local_gpu =~ ^[0-9]+([.][0-9]+)?$ ]]; then local_gpu=0; fi
+    if [[ ! $local_vram =~ ^[0-9]+([.][0-9]+)?$ ]]; then local_vram=0; fi
+    if [[ ! $local_ram =~ ^[0-9]+([.][0-9]+)?$ ]]; then local_ram=0; fi
+
+    total_cpu=$(echo "$total_cpu + $local_cpu" | bc)
+    total_gpu=$(echo "$total_gpu + $local_gpu" | bc)
+    total_vram=$(echo "$total_vram + $local_vram" | bc)
+    total_ram=$(echo "$total_ram + $local_ram" | bc)
     
     count=$((count + 1))
-
-    echo "VRAM: $local_vram MB, GPU: $local_gpu%" >> gpu.log
 done
 
-average_vram=$(awk "BEGIN {rounded = sprintf(\"%.${decimal_places}f\", $total_vram / $count); print rounded}")
-average_ram=$(awk "BEGIN {rounded = sprintf(\"%.${decimal_places}f\", $total_ram / $count); print rounded}")
-average_cpu=$(awk "BEGIN {rounded = sprintf(\"%.${decimal_places}f\", $total_cpu / $count); print rounded}")
-average_gpu=$(awk "BEGIN {rounded = sprintf(\"%.${decimal_places}f\", $total_gpu / $count); print rounded}")
+average_vram=$(echo "scale=$decimal_places; $total_vram / $count" | bc)
+average_ram=$(echo "scale=$decimal_places; $total_ram / $count" | bc)
+average_cpu=$(echo "scale=$decimal_places; $total_cpu / $count" | bc)
+average_gpu=$(echo "scale=$decimal_places; $total_gpu / $count" | bc)
 
 echo "Average VRAM: $average_vram MB" >> "$output_file"
 echo "Average RAM: $average_ram GB" >> "$output_file"

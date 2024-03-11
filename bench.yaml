@@ -69,7 +69,7 @@ spec:
             image: tikpapyan/benchmarking:v1.0-203
             env:
             - name: DURATION
-              value: '20'
+              value: '360'
             - name: SSH_PASSWORD
               value: '$cy11a'
             - name: REMOTE_IP
@@ -79,7 +79,7 @@ spec:
             - name: LOG_LEVEL
               value: "INFO"
             - name: INFINITE_TIMEOUT
-              value: 'true'
+              value: 'false'
             volumeMounts:
             - name: bench-volume
               mountPath: "/var/log/scylla/bench/"
