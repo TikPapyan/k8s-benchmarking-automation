@@ -87,7 +87,7 @@ def capture_ids_info_logs(core_v1_api, deployment, namespace, duration, log_dir)
             info_log_path = os.path.join(log_dir, f"info-{pod.metadata.name}.log")
             with open(info_log_path, 'w') as info_log_file:
                 info_log_file.write(resp)
+            logger.debug(f"IDS info log captured and saved for pod: {pod.metadata.name}")
 
     except Exception as e:
         logger.error(f"Error in capture_ids_info_logs: {e}")
-
