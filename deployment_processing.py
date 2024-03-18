@@ -57,8 +57,6 @@ def calculate_and_log_metrics(deployment_name, log_file_path, log_dir):
 
 
 def process_single_deployments(csvwriter, log_dir, deployments, hardware_metrics):
-    logger.debug("Starting process_single_deployments function.")
-
     log_files = glob(os.path.join(log_dir, "*.log"))
     for log_file_path in log_files:
         file_name = os.path.basename(log_file_path)
@@ -87,8 +85,6 @@ def process_single_deployments(csvwriter, log_dir, deployments, hardware_metrics
 
 
 def process_combo_deployments(csvwriter, log_dir, deployments, hardware_metrics, combo_header):
-    logger.debug("Starting process_combo_deployments function.")
-
     row = [hardware_metrics.get("VRAM", ""),
            hardware_metrics.get("RAM", ""),
            hardware_metrics.get("CPU", ""),

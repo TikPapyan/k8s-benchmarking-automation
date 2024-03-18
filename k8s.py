@@ -74,7 +74,7 @@ def capture_ids_info_logs(core_v1_api, deployment, namespace, duration, log_dir)
         pods = core_v1_api.list_namespaced_pod(namespace, label_selector=label_selector)
 
         for pod in pods.items:
-            command = ["cat", "/var/log/ids/scylla-info.log"]
+            command = ["cat", "/var/log/scylla/scylla-info.log"]
             resp = stream.stream(core_v1_api.connect_get_namespaced_pod_exec,
                                  name=pod.metadata.name,
                                  namespace=namespace,
