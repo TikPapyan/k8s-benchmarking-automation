@@ -28,12 +28,16 @@ def calculate_average_load(log_file_path):
     server_loads = [int(re.sub('%', '', m.group(0))) for line in lines if (m := re.search(r'\d*%', line))]
 
     if server_loads:
-        average_server_load = sum(server_loads) / len(server_loads)
-        return f"{round(average_server_load, 2)}% ({len(server_loads)})"
+        if len(server_loads) > 1:
+            average_server_load = sum(server_loads[1:]) / len(server_loads[1:])
+        else:
+            return "Only one server load present, no average to calculate."
+        
+        return f"{round(average_server_load, 2)}% ({len(server_loads)-1})"
     else:
         logger.error(f'No server load data found in {log_file_path}')
         return "error"
-
+    
 
 def calculate_ids_motion(info_log_file):
     logger.debug(f"Calculating motion count for {info_log_file}")
